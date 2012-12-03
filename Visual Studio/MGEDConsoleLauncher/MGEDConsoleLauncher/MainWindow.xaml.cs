@@ -68,7 +68,7 @@ namespace MGEDConsoleLauncher
                 toLaunch += "mged_data_csv.exe"; 
             }
 
-            string arguments = string.Format("'{0}', '{1}' {2}", _inputFile, _outputFile, OutputFile_TextBox_Copy.Text);
+            string arguments = string.Format("'{0}' '{1}' {2}", _inputFile, _outputFile, OutputFile_TextBox_Copy.Text);
             
             _process.StartInfo = new ProcessStartInfo(toLaunch, arguments);
             _process.StartInfo.UseShellExecute = false; 

@@ -61,21 +61,20 @@ namespace MGEDConsoleLauncher
             }
             else if (DataPhaser_RadioButton.IsChecked == true)
             {
-                toLaunch += "mged_data_csv.exe"; 
+                toLaunch += "mged_data_fold.exe"; 
             }
             else if (DataSplitter_RadioButton.IsChecked == true)
             {
-                toLaunch += "mged_data_csv.exe"; 
+                toLaunch += "mged_data_split.exe"; 
             }
 
-            string arguments = string.Format("'{0}' '{1}' {2}", _inputFile, _outputFile, OutputFile_TextBox_Copy.Text);
+            string arguments = string.Format("\"{0}\" \"{1}\" {2}", _inputFile, _outputFile, OutputFile_TextBox_Copy.Text);
             
             _process.StartInfo = new ProcessStartInfo(toLaunch, arguments);
             _process.StartInfo.UseShellExecute = false; 
             _process.StartInfo.RedirectStandardOutput = true;
             _process.Start();
 
-            string output = _process.StandardOutput.ReadToEnd();
             _process.WaitForExit();
 
             return; 

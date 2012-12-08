@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -24,11 +25,22 @@ namespace MGEDConsoleLauncher
     public partial class MainWindow : Window
     {
         private string _inputFile = null, _outputFile = null;
-        private Process _process = new Process(); 
+        public ObservableCollection<ProcessListItem> Items { get; set; }
+        private string _toLaunch = ""; 
 
         public MainWindow()
         {
             InitializeComponent();
+
+            Items = new ObservableCollection<ProcessListItem>();
+
+            string[] files = Directory.GetFiles(System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Apps"), "*exe");
+            foreach (string file in files)
+            {
+                Items.Add(new ProcessListItem { TheText = System.IO.Path.GetFileName(file), TheValue = file });
+            }
+
+            this.DataContext = Items;
         }
 
         private void InputFile_Button_Click(object sender, RoutedEventArgs e)
@@ -37,7 +49,7 @@ namespace MGEDConsoleLauncher
             if (ofd.ShowDialog() == true)
             {
                 _inputFile = ofd.FileName;
-                InputFile_TextBox.Text = _inputFile; 
+                InputFile_TextBox.Text = _inputFile;
             }
         }
 
@@ -47,35 +59,82 @@ namespace MGEDConsoleLauncher
             if (sfd.ShowDialog() == true)
             {
                 _outputFile = sfd.FileName;
-                OutputFile_TextBox.Text = _outputFile; 
+                OutputFile_TextBox.Text = _outputFile;
             }
         }
 
         private void Launch_Button_Click(object sender, RoutedEventArgs e)
         {
-            string toLaunch = "Apps\\";
-
-            if (CSV_RadioButton.IsChecked == true)
+            if (!string.IsNullOrEmpty(_toLaunch))
             {
-                toLaunch += "mged_data_csv.exe"; 
+                TextBlock_Output.Text = ""; 
+
+                Process process = new Process();
+
+                process.StartInfo.FileName = _toLaunch;
+                process.StartInfo.Arguments = string.Format("\"{0}\" \"{1}\" {2}", _inputFile, _outputFile, OutputFile_TextBox_Copy.Text);
+
+                process.StartInfo.CreateNoWindow = false;
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                process.StartInfo.RedirectStandardInput = true;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+
+                process.EnableRaisingEvents = true;
+                process.OutputDataReceived += process_OutputDataReceived;
+                process.ErrorDataReceived += process_ErrorDataReceived;
+                process.Exited += process_Exited;
+                process.Start();
+
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+
+                return;
             }
-            else if (DataPhaser_RadioButton.IsChecked == true)
+        }
+
+        void process_Exited(object sender, EventArgs e)
+        {
+
+
+            Dispatcher.BeginInvoke((Action)delegate()
             {
-                toLaunch += "mged_data_fold.exe"; 
-            }
-            else if (DataSplitter_RadioButton.IsChecked == true)
+                TextBlock_Output.Text += "Process exited with value " + ((Process)sender).ExitCode + "\n";
+                TextBlock_Output.Text += "Process completed in " +
+                    ((DateTime.Now - ((Process)sender).StartTime)).TotalSeconds + " seconds.\n";
+            });
+        }
+
+        void process_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(e.Data))
             {
-                toLaunch += "mged_data_split.exe"; 
+                Dispatcher.BeginInvoke((Action)delegate()
+                {
+                    TextBlock_Output.Text += e.Data + "\n";
+                });
             }
 
-            string arguments = string.Format("\"{0}\" \"{1}\" {2}", _inputFile, _outputFile, OutputFile_TextBox_Copy.Text);
-            
-            _process.StartInfo = new ProcessStartInfo(toLaunch, arguments);
-            _process.StartInfo.UseShellExecute = false; 
-            _process.StartInfo.RedirectStandardOutput = true;
-            _process.Start();
+            return;
+        }
 
-            _process.WaitForExit();
+        void process_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            if (!string.IsNullOrEmpty(e.Data))
+            {
+                Dispatcher.BeginInvoke((Action)delegate()
+                {
+                    TextBlock_Output.Text += e.Data + "\n";
+                });
+            }
+
+            return;
+        }
+
+        private void RadioButton_Checked_1(object sender, RoutedEventArgs e)
+        {
+            _toLaunch = ((RadioButton)e.Source).Tag.ToString(); 
 
             return; 
         }

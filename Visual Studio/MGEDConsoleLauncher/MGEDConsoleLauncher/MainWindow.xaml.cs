@@ -74,7 +74,7 @@ namespace MGEDConsoleLauncher
                 process.StartInfo.FileName = _toLaunch;
                 process.StartInfo.Arguments = string.Format("\"{0}\" \"{1}\" {2}", _inputFile, _outputFile, OutputFile_TextBox_Copy.Text);
 
-                process.StartInfo.CreateNoWindow = false;
+                process.StartInfo.CreateNoWindow = true;
                 process.StartInfo.UseShellExecute = false;
                 process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
                 process.StartInfo.RedirectStandardInput = true;

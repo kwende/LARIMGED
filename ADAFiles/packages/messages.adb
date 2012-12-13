@@ -1,26 +1,14 @@
--- This file is part of mged_data_phaser.
--- Foobar is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
-
--- Foobar is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
-
--- You should have received a copy of the GNU General Public License
--- along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
-
--- Copyright 2012 Bruce W. Koehn
-
 with
 Ada.Calendar,
+     Ada.Calendar.Time_Zones,
+     Ada.Calendar.Formatting,
      Ada.Strings,
      Ada.Strings.Maps,
      Ada.Strings.Fixed;
 use
   Ada.Calendar,
+    Ada.Calendar.Time_Zones,
+    Ada.Calendar.Formatting,
     Ada.Strings,
     Ada.Strings.Maps,
     Ada.Strings.Fixed;
@@ -37,8 +25,11 @@ package body Messages is
    Yr : Year_Number;
    Mo : Month_Number;
    Dy : Day_Number;
-   Hr, Mn : Integer;
-   Sc : Day_Duration;
+   Hr : Hour_Number;
+   Mn : Minute_Number;
+   Sc : Second_Number;
+   Ss : Second_Duration;
+   Tz : Time_Offset;
    S : String (1 .. 2);
 
    --  This local procedure breaks the "source" string into lines at
@@ -79,16 +70,16 @@ package body Messages is
             end if;
          end if;
       end loop;
+      New_Line (Dest);
    end Justify_Text;
 
    procedure Error_Msg (Procedure_Name : in String;
                         Message        : in String;
                         Dest           : in File_Type := Standard_Error) is
    begin
-      Split ((Clock + Day_Duration (7 * 3600)), Yr, Mo, Dy, Sc);
-      Hr := Integer (Sc) / 3600;
-      Mn := (Integer (Sc) - (3600 * Hr)) / 60;
-      Sc := Day_Duration (Integer (Sc) - (3600 * Hr) - (60 * Mn));
+      -- Tz := Utc_Time_Offset (Clock);
+      Tz := Time_Offset(0);  -- For UT.
+      Split (Clock, Yr, Mo, Dy, Hr, Mn, Sc, Ss, Tz);
       Put (Dest, "***ERROR***  ");
       Put (Dest, Integer (Yr), 4);
       Put (Dest, " " & Month_Name (Integer (Mo)) & " ");
@@ -119,10 +110,9 @@ package body Messages is
                          Message        : in String;
                          Dest           : in File_Type := Standard_Output) is
    begin
-      Split ((Clock + Day_Duration (7 * 3600)), Yr, Mo, Dy, Sc);
-      Hr := Integer (Sc) / 3600;
-      Mn := (Integer (Sc) - (3600 * Hr)) / 60;
-      Sc := Day_Duration (Integer (Sc) - (3600 * Hr) - (60 * Mn));
+      -- Tz := UTC_Time_Offset(Clock);
+      Tz := Time_Offset(0); -- for UT
+      Split (Clock, Yr, Mo, Dy, Hr, Mn, Sc, Ss, Tz);
       Put (Dest, "***STATUS*** ");
       Put (Dest, Integer (Yr), 4);
       Put (Dest, " " & Month_Name (Integer (Mo)) & " ");

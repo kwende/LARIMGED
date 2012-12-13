@@ -1,19 +1,3 @@
--- This file is part of mged_data_phaser.
--- Foobar is free software: you can redistribute it and/or modify
--- it under the terms of the GNU General Public License as published by
--- the Free Software Foundation, either version 3 of the License, or
--- (at your option) any later version.
-
--- Foobar is distributed in the hope that it will be useful,
--- but WITHOUT ANY WARRANTY; without even the implied warranty of
--- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
--- GNU General Public License for more details.
-
--- You should have received a copy of the GNU General Public License
--- along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
-
--- Copyright 2012 Bruce W. Koehn
-
 --  <description>
 --  This package provides two procedures for writing informational
 --  messages. Both procedures requires two input
@@ -34,6 +18,13 @@
 --  The Message string is formatted to print in lines of 60 characters
 --  or less. This length is hard-coded into the messages.adb file.
 --  </description>
+--
+--  Modified 2012-11-25
+--  1. Changed the date string to UT for any location. This change requires
+--  Ada 2005 compiler for the newest calendar packages. (Old behavior was
+--  correct only for Mountain Standard Time.)
+--  2. Fixed a bug in the message formatter.  The message is now followed by
+--  a line feed.
 --
 with Ada.Text_Io;
 use Ada.Text_Io;

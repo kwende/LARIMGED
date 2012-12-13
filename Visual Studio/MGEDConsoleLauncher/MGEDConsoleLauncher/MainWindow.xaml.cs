@@ -24,7 +24,6 @@ namespace MGEDConsoleLauncher
     /// </summary>
     public partial class MainWindow : Window
     {
-        private string _inputFile = null, _outputFile = null;
         public ObservableCollection<ProcessListItem> Items { get; set; }
         private string _toLaunch = ""; 
 
@@ -48,8 +47,7 @@ namespace MGEDConsoleLauncher
             OpenFileDialog ofd = new OpenFileDialog();
             if (ofd.ShowDialog() == true)
             {
-                _inputFile = ofd.FileName;
-                InputFile_TextBox.Text = _inputFile;
+                InputFile_TextBox.Text = ofd.FileName;
             }
         }
 
@@ -58,8 +56,7 @@ namespace MGEDConsoleLauncher
             SaveFileDialog sfd = new SaveFileDialog();
             if (sfd.ShowDialog() == true)
             {
-                _outputFile = sfd.FileName;
-                OutputFile_TextBox.Text = _outputFile;
+                OutputFile_TextBox.Text = sfd.FileName;
             }
         }
 
@@ -72,7 +69,8 @@ namespace MGEDConsoleLauncher
                 Process process = new Process();
 
                 process.StartInfo.FileName = _toLaunch;
-                process.StartInfo.Arguments = string.Format("\"{0}\" \"{1}\" {2}", _inputFile, _outputFile, OutputFile_TextBox_Copy.Text);
+                process.StartInfo.Arguments = string.Format("\"{0}\" \"{1}\" {2}", InputFile_TextBox.Text, 
+                    OutputFile_TextBox.Text, OutputFile_TextBox_Copy.Text);
 
                 process.StartInfo.CreateNoWindow = true;
                 process.StartInfo.UseShellExecute = false;
@@ -96,8 +94,6 @@ namespace MGEDConsoleLauncher
 
         void process_Exited(object sender, EventArgs e)
         {
-
-
             Dispatcher.BeginInvoke((Action)delegate()
             {
                 TextBlock_Output.Text += "Process exited with value " + ((Process)sender).ExitCode + "\n";

@@ -92,13 +92,15 @@ with Ada.Text_Io,
      Ada.Strings.Fixed,
      Ada.Strings.Maps,
      Astro,
-     Messages;
+     Messages,
+     Tsa_Pkg;
 use Ada.Text_Io,
     Ada.Command_Line,
     Ada.Strings,
     Ada.Strings.Fixed,
     Ada.Strings.Maps,
-    Messages;
+    Messages,
+    Tsa_Pkg;
 
 procedure Mged_Data_False_Alarm is
    package Ast is new Astro (Integer, Long_Float); use Ast;
@@ -108,35 +110,52 @@ procedure Mged_Data_False_Alarm is
    type S1_Array_Ptr is access S1_Array;
    Src, Dst : File_Type;
    Line_Count, N_Lcs, Tail, Ndx, Ptr, First, Last,
-     Terminus : Natural;
+   Terminus, N_Points : Natural;
+   K : Integer;
    Delimiter : Character_Set;
    Done : Boolean;
    Buffer : String (1 .. 512);
    All_Lcs : S1_Array_Ptr;
-   Minps, Maxps, Scrambled_Pxs, Cumulative, Mag, Timestamp : F1_Array_Ptr;
+   Minps, Maxps, Scrambled_Pxs, Cumulative, Mag, Timestamp,
+     Epoch : F1_Array_Ptr;
    N_Ps, N_Trials : I1_Array_Ptr;
+   Minimum_Time, Max_Mag, Min_Mag, Mag_Difference : Long_Float;
    User_Error : exception;
 
-   procedure Min_Max
-     (Numbers : in F1_Array;
-      Min_Number : out Long_Float;
-      Max_Number : out Long_Float) is
+   function Minimum
+     (Numbers : in F1_Array) return Long_Float is
+      Min_Number : Long_Float;
       Argument_Error : Exception;
    begin
       if Numbers'First - Numbers'Last = 0 then
          raise Argument_Error;
       end if;
-      Max_Number := Numbers(Numbers'First);
-      Min_Number := Max_Number;
+      Min_Number := Numbers(Numbers'First);
       for I in Numbers'First .. Numbers'Last loop
-         if Numbers (I) > Max_Number then
-            Max_Number := Numbers (I);
-         end if;
          if Numbers (I) < Min_Number then
             Min_Number := Numbers (I);
          end if;
       end loop;
-   end Min_Max;
+      return Min_Number;
+   end Minimum;
+
+
+   function Maximum
+     (Numbers : in F1_Array) return Long_Float is
+      Argument_Error : Exception;
+      Max_Number : Long_Float;
+   begin
+      if Numbers'First - Numbers'Last = 0 then
+         raise Argument_Error;
+      end if;
+      Max_Number := Numbers(Numbers'First);
+      for I in Numbers'First .. Numbers'Last loop
+         if Numbers (I) > Max_Number then
+            Max_Number := Numbers (I);
+         end if;
+      end loop;
+      return Max_Number;
+   end Maximum;
 
 begin
    --
@@ -281,17 +300,32 @@ begin
       --
       --  Just to hurry through this, I won't program this in
       --  a safe way.
+      --
       Open (Src, In_File, Trim (All_Lcs (I), Both));
       Timestamp := new F1_Array (1 .. N_Trials (I));
       Mag := new F1_Array (1 .. N_Trials (I));
+      K := 0;
       while not End_Of_File (Src) loop
-         Get (Src, Timestamp (I), Terminus);
-         Get(Src,Mag(I),Terminus);
+         K := K+1;
+         Get (Src, Timestamp (K), Terminus);
+         Get(Src,Mag(K),Terminus);
       end loop;
-      Put_Line("Processing " & Trim(All_Lcs(I),Both) & ".");
+      --  Should check that K matches N_Trials.
+      Put_Line ("Processing " & Trim (All_Lcs (I), Both) & ".");
+      Minimum_Time := Minimum (Timestamp.all);
+      Epoch := new F1_Array(Timestamp'First..Timestamp'Last);
+      for J in Timestamp'First .. Timestamp'Last loop
+         Epoch (J) := Timestamp (J) - Minimum_Time;
+      end loop;
+      N_Points := Timestamp'Last - Timestamp'First + 1;
+      Min_Mag := Minimum (Mag.all);
+      Max_Mag := Maximum (Mag.all);
+      Mag_Difference := Max_Mag - Min_Mag;
+      --  output the data for a plot file
       Free_F1_Array (Mag);
-      Free_F1_Array(Timestamp);
+      Free_F1_Array (Timestamp);
       Free_F1_Array (Scrambled_Pxs);
-      Free_F1_Array(Cumulative);
+      Free_F1_Array (Cumulative);
+      Free_F1_Array (Epoch);
    end loop;
 end Mged_Data_False_Alarm;

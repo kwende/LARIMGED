@@ -1,91 +1,4 @@
---
---  This file is part of Lowell Observatories MGED software project.
---  MGED software is free software: you can redistribute it and/or
---  modify it under the terms of the GNU General Public License as
---  published by the Free Software Foundation, either version 3 of the
---  License, or (at your option) any later version.
 
---  MGED software is distributed in the hope that it will be useful,
---  but WITHOUT ANY WARRANTY; without even the implied warranty of
---  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
---  General Public License for more details.
-
---  You should have received a copy of the GNU General Public License
---  along with MGED software.  If not, see
---  <http://www.gnu.org/licenses/>.
-
---  Copyright 2012 Bruce W. Koehn, Lowell Observatory
---
---  <description>
--- This procedure computes the lomb-scargle periodogram of an
--- unevenly sampled lightcurve.
---
--- The Lomb Scargle power spectral density (PSD) is computed
--- according to the
--- definitions given by Scargle, 1982, ApJ, 263, 835, and Horne
--- and Baliunas, 1986, MNRAS, 302, 757. Beware of patterns and
--- clustered data points as the Horne results break down in
--- this case! Read and understand the papers and this
--- code before using it! For the fast algorithm read W.H. Press
--- and G.B. Rybicki 1989, ApJ 338, 277.
---
--- The code is still stupid in the sense that it wants normal
--- frequencies, but returns angular frequency...
---
---
--- CALLING SEQUENCE:
---   scargle,t,c,om,px,fmin=fmin,fmax=fmax,numf=numf,pmin=pmin,pmax=pmax,
---            nu=nu,period=period,omega=omega,fap=fap,signi=signi
---
---
--- INPUTS:
---         time: The times at which the time series was measured
---         rate: the corresponding count rates
---
---
--- OPTIONAL INPUTS:
---         fmin,fmax: minimum and maximum frequency (NOT ANGULAR FREQ!)
---                to be used (has precedence over pmin,pmax)
---         pmin,pmax: minimum and maximum PERIOD to be used
---         omega: angular frequencies for which the PSD values are
---                desired
---         fap : false alarm probability desired
---               (see Scargle et al., p. 840, and signi
---               keyword). Default equal to 0.01 (99% significance)
---         noise: for the normalization of the periodogram and the
---            compute of the white noise simulations. If not set, equal to
---            the variance of the original lc.
---         multiple: number of white  noise simulations for the FAP
---            power level. Default equal to 0 (i.e., no simulations).
---         numf: number of independent frequencies
---
---
--- KEYWORD PARAMETERS:
---         old : if set computing the periodogram according to J.D.Scargle
---            1982, ApJ 263, 835. If not set, computing the periodogram
---            with the fast algorithm of W.H. Press and G.B. Rybicki,
---            1989, ApJ 338, 277.
---         debug: print out debugging information if set
---         slow: if set, a much slower but less memory intensive way to
---            perform the white noise simulations is used.
---
--- OUTPUTS:
---            om   : angular frequency of PSD
---            psd  : the psd-values corresponding to omega
---
---
--- OPTIONAL OUTPUTS:
---            nu    : normal frequency  (nu=omega/(2*!DPI))
---            period: period corresponding to each omega
---            signi : power threshold corresponding to the given
---                    false alarm probabilities fap and according to the
---                    desired number of independent frequencies
---            simsigni : power threshold corresponding to the given
---                    false alarm probabilities fap according to white
---                    noise simulations
---            psdpeaksort : array with the maximum peak pro each simulation
---
---  </description>
 with Ada.Text_Io,
      Ada.Command_Line,
      Ada.Strings,
@@ -117,45 +30,10 @@ procedure Mged_Data_False_Alarm is
    Buffer : String (1 .. 512);
    All_Lcs : S1_Array_Ptr;
    Minps, Maxps, Scrambled_Pxs, Cumulative, Mag, Timestamp,
-     Epoch : F1_Array_Ptr;
+   Epoch : Tsa_Pkg.Ast.F1_Array_Ptr;
    N_Ps, N_Trials : I1_Array_Ptr;
    Minimum_Time, Max_Mag, Min_Mag, Mag_Difference : Long_Float;
    User_Error : exception;
-
-   function Minimum
-     (Numbers : in F1_Array) return Long_Float is
-      Min_Number : Long_Float;
-      Argument_Error : Exception;
-   begin
-      if Numbers'First - Numbers'Last = 0 then
-         raise Argument_Error;
-      end if;
-      Min_Number := Numbers(Numbers'First);
-      for I in Numbers'First .. Numbers'Last loop
-         if Numbers (I) < Min_Number then
-            Min_Number := Numbers (I);
-         end if;
-      end loop;
-      return Min_Number;
-   end Minimum;
-
-
-   function Maximum
-     (Numbers : in F1_Array) return Long_Float is
-      Argument_Error : Exception;
-      Max_Number : Long_Float;
-   begin
-      if Numbers'First - Numbers'Last = 0 then
-         raise Argument_Error;
-      end if;
-      Max_Number := Numbers(Numbers'First);
-      for I in Numbers'First .. Numbers'Last loop
-         if Numbers (I) > Max_Number then
-            Max_Number := Numbers (I);
-         end if;
-      end loop;
-      return Max_Number;
-   end Maximum;
 
 begin
    --
@@ -226,8 +104,8 @@ begin
    --  Allocate the required arrays.
    --
    All_Lcs := new S1_Array (1 .. Line_Count);
-   Minps := new F1_Array (1 .. Line_Count);
-   Maxps := new F1_Array (1 .. Line_Count) ;
+   Minps := new Tsa_Pkg.Ast.F1_Array (1 .. Line_Count);
+   Maxps := new Tsa_Pkg.Ast.F1_Array (1 .. Line_Count) ;
    N_Ps := new I1_Array (1 .. Line_Count);
    N_Trials := new I1_Array (1 .. Line_Count);
    --
@@ -290,8 +168,8 @@ begin
    --  Each time through the loop we read another file.
    --
    for I in 1 .. N_Lcs loop
-      Scrambled_Pxs := new F1_Array(1 .. N_Trials(I));
-      Cumulative := new F1_Array (1 .. N_Trials (I));
+      Scrambled_Pxs := new Tsa_Pkg.Ast.F1_Array(1 .. N_Trials(I));
+      Cumulative := new Tsa_Pkg.Ast.F1_Array (1 .. N_Trials (I));
       for J in 1 .. N_Trials (I) loop
          Cumulative (J) := Long_Float (J) / Long_Float (N_Trials (I));
       end loop;
@@ -302,8 +180,8 @@ begin
       --  a safe way.
       --
       Open (Src, In_File, Trim (All_Lcs (I), Both));
-      Timestamp := new F1_Array (1 .. N_Trials (I));
-      Mag := new F1_Array (1 .. N_Trials (I));
+      Timestamp := new Tsa_Pkg.Ast.F1_Array (1 .. N_Trials (I));
+      Mag := new Tsa_Pkg.Ast.F1_Array (1 .. N_Trials (I));
       K := 0;
       while not End_Of_File (Src) loop
          K := K+1;
@@ -313,7 +191,7 @@ begin
       --  Should check that K matches N_Trials.
       Put_Line ("Processing " & Trim (All_Lcs (I), Both) & ".");
       Minimum_Time := Minimum (Timestamp.all);
-      Epoch := new F1_Array(Timestamp'First..Timestamp'Last);
+      Epoch := new Tsa_Pkg.Ast.F1_Array(Timestamp'First..Timestamp'Last);
       for J in Timestamp'First .. Timestamp'Last loop
          Epoch (J) := Timestamp (J) - Minimum_Time;
       end loop;
@@ -321,11 +199,11 @@ begin
       Min_Mag := Minimum (Mag.all);
       Max_Mag := Maximum (Mag.all);
       Mag_Difference := Max_Mag - Min_Mag;
-      --  output the data for a plot file
-      Free_F1_Array (Mag);
-      Free_F1_Array (Timestamp);
-      Free_F1_Array (Scrambled_Pxs);
-      Free_F1_Array (Cumulative);
-      Free_F1_Array (Epoch);
+      --  Output the data for a plot file here.
+      Tsa_Pkg.Ast.Free_F1_Array (Mag);
+      Tsa_Pkg.Ast.Free_F1_Array (Timestamp);
+      Tsa_Pkg.Ast.Free_F1_Array (Scrambled_Pxs);
+      Tsa_Pkg.Ast.Free_F1_Array (Cumulative);
+      Tsa_Pkg.Ast.Free_F1_Array (Epoch);
    end loop;
 end Mged_Data_False_Alarm;

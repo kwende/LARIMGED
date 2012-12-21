@@ -144,20 +144,26 @@ double times[MAXDATP+1];
 double mags[MAXDATP+1];
 double sigs[MAXDATP+1]; 
 
-
-/*  sample test case, TU Cas data, see data file TuCas.dat for file format  */
-/*  Numdat will be set by the read_file routine                             */
-
-
 int main( int argc, char *argv[] )
 {
-    char file[31];
-    int ret;
+    char file[64];
+    int ret, z;
+    
+    if ( argc == 2 || argc == 3 ) {
+      strcpy( file, argv[1] );
+    }
+    else {
+      z = argc - 1;
+      printf("This procedure requires exactly one command line argument. %d were found.\n", z );
+       exit (-1);
+    }
 
-    strcpy( file, "TuCas.dat" );     /* <-------------data file------------*/
     ret = read_data_file( file, 1 ); 
 
-    if( !ret )  exit(2);
+    if( !ret ) 
+      {exit(2);}
+    else
+      {printf("read_data_file 1 success.\n");};
 
     /*  ----------------------BEGIN PDM2 analysis  ---------------------------*/
 
@@ -170,9 +176,10 @@ int main( int argc, char *argv[] )
     segdev = 2;     /*  for TuCas case  */
     /*  segdev = 20;    alt  */
 
+    printf("Starting pdm2 rough cut.\n");
     pdm2( Numdat, times, mags, sigs );
 
-    getchar();
+    /*getchar();*/
 
     /*  now zero in on the best candidate  */
 
@@ -190,9 +197,10 @@ int main( int argc, char *argv[] )
       beta_max = 10.;          set these two to do a period change case  */
     /*  nb0 = 51               optional fine scan for period change      */
 
+    printf("Starting pdm2 fine cut\n");
     pdm2( Numdat, times, mags, sigs );
 
-    getchar();
+    /*getchar();*/
 }
 
 
@@ -1102,6 +1110,7 @@ void error( char *str )
 {
     printf( "%s\n", str );
     getchar();
+    printf("Step B");
     exit(1);
 }
 
@@ -1279,7 +1288,7 @@ int read_data_file( char *file, int title_lines ) {
                 printf( "Error reading file %s\n", file );
                 return(0);
             }
-            printf( "%s\n", buffer );
+            /*printf( "%s\n", buffer );*/
         }
     }
 
@@ -1310,7 +1319,7 @@ int read_data_file( char *file, int title_lines ) {
                 break;
             }
         }
-        if( i <= 21 )  printf( "%d, %18.12g, %18.12g, %g\n", i, times[i], mags[i], sigs[i] );
+        /* if( i <= 21 )  printf( "%d, %18.12g, %18.12g, %g\n", i, times[i], mags[i], sigs[i] );*/
     }
     Numdat = i - 1;
     if( i == MAXDATP+1 ) {
@@ -1319,10 +1328,3 @@ int read_data_file( char *file, int title_lines ) {
     }
     return(1);
 }
-
-
-
-------WebKitFormBoundaryF4EAAjBBHQFCW2ji
-Content-Disposition: form-data; name="doc2type"
-
-asis

@@ -6,8 +6,16 @@
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	int ret = pdm2_2("C:\\users\\ben\\desktop\\TuCas.dat", "C:\\users\\ben\\desktop\\test\\"); 
+	if(argc==3)
+	{
+		char argv1[1024]; 
+		char argv2[1024]; 
 
+		wcstombs(argv1, argv[1], sizeof(argv1)); 
+		wcstombs(argv2, argv[2], sizeof(argv1)); 
+
+		int ret = pdm2_2(argv1, argv2); 
+	}
 	return 0;
 }
 

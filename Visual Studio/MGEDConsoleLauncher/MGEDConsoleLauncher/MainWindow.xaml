@@ -11,18 +11,26 @@
             </ListBox.ItemTemplate>
         </ListBox>
         <Label Content="To Launch:" HorizontalAlignment="Left" Margin="22,10,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="OutputFile_TextBox" HorizontalAlignment="Left" Height="23" Margin="99,180,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="296"/>
+        <TextBox x:Name="OutputFile_TextBox" HorizontalAlignment="Left" Height="23" Margin="99,199,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="258"/>
         <TextBox x:Name="InputFile_TextBox" HorizontalAlignment="Left" Height="23" Margin="99,152,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="296"/>
         <Label Content="Input File:" HorizontalAlignment="Left" Margin="22,152,0,0" VerticalAlignment="Top"/>
-        <Label Content="Output File:" HorizontalAlignment="Left" Margin="22,183,0,0" VerticalAlignment="Top"/>
+        <Label Content="Output Path:" HorizontalAlignment="Left" Margin="22,201,0,0" VerticalAlignment="Top"/>
         <Button x:Name="InputFile_Button" Content="Browse" HorizontalAlignment="Left" Margin="410,152,0,0" VerticalAlignment="Top" Width="75" Click="InputFile_Button_Click"/>
-        <Button x:Name="OutputFile_Button" Content="Browse" HorizontalAlignment="Left" Margin="410,180,0,0" VerticalAlignment="Top" Width="75" Click="OutputFile_Button_Click"/>
-        <Label Content="Extra Arguments (separate with spaces):" HorizontalAlignment="Left" Margin="22,220,0,0" VerticalAlignment="Top"/>
-        <TextBox x:Name="OutputFile_TextBox_Copy" HorizontalAlignment="Left" Height="23" Margin="33,251,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="362"/>
-        <Button x:Name="Launch_Button" Content="Execute" HorizontalAlignment="Left" Margin="410,290,0,0" VerticalAlignment="Top" Width="75" Click="Launch_Button_Click"/>
+        <Button x:Name="OutputFile_Button" Content="Select Directory..." HorizontalAlignment="Left" Margin="362,192,0,0" VerticalAlignment="Top" Width="123" Click="OutputDir_Button_Click"/>
+        <Label Content="Extra Arguments (separate with spaces):" HorizontalAlignment="Left" Margin="22,269,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="OutputFile_TextBox_Copy" HorizontalAlignment="Left" Height="23" Margin="33,300,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="362"/>
+        <Button x:Name="Launch_Button" Content="Execute" HorizontalAlignment="Left" Margin="410,303,0,0" VerticalAlignment="Top" Width="75" Click="Launch_Button_Click"/>
         <GroupBox Header="Results" HorizontalAlignment="Left" Margin="44,355,0,0" VerticalAlignment="Top" Height="189" Width="441">
-            <TextBox  Margin="0,0,-2,0" Name="TextBlock_Output" TextWrapping="Wrap" />
+            <TextBox  Margin="0,0,-2,0" Name="TextBlock_Output" 
+                      HorizontalScrollBarVisibility="Visible"
+                      VerticalScrollBarVisibility="Visible"
+                      TextWrapping="Wrap"
+                      TextAlignment="Left"
+                      IsReadOnly="False"
+                      AcceptsReturn="True"
+                      MaxLength="500"/>
         </GroupBox>
+        <Button x:Name="OutputFile_Button_Copy" Content="Select File..." HorizontalAlignment="Left" Margin="362,217,0,0" VerticalAlignment="Top" Width="123" Click="OutputFile_Button_Click"/>
 
     </Grid>
 </Window>

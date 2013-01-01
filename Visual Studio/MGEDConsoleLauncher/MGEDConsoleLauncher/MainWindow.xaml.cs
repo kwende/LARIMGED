@@ -11,6 +11,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -25,7 +26,8 @@ namespace MGEDConsoleLauncher
     public partial class MainWindow : Window
     {
         public ObservableCollection<ProcessListItem> Items { get; set; }
-        private string _toLaunch = ""; 
+        private string _toLaunch = "";
+        private StringBuilder _outputText = new StringBuilder(10240);
 
         public MainWindow()
         {
@@ -44,7 +46,7 @@ namespace MGEDConsoleLauncher
 
         private void InputFile_Button_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog ofd = new OpenFileDialog();
+            Microsoft.Win32.OpenFileDialog ofd = new Microsoft.Win32.OpenFileDialog();
             if (ofd.ShowDialog() == true)
             {
                 InputFile_TextBox.Text = ofd.FileName;
@@ -53,10 +55,20 @@ namespace MGEDConsoleLauncher
 
         private void OutputFile_Button_Click(object sender, RoutedEventArgs e)
         {
-            SaveFileDialog sfd = new SaveFileDialog();
+            Microsoft.Win32.SaveFileDialog sfd = new Microsoft.Win32.SaveFileDialog();
             if (sfd.ShowDialog() == true)
             {
                 OutputFile_TextBox.Text = sfd.FileName;
+            }
+        }
+
+
+        private void OutputDir_Button_Click(object sender, RoutedEventArgs e)
+        {
+            FolderBrowserDialog d = new FolderBrowserDialog();
+            if (d.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                OutputFile_TextBox.Text = d.SelectedPath;
             }
         }
 
@@ -64,12 +76,13 @@ namespace MGEDConsoleLauncher
         {
             if (!string.IsNullOrEmpty(_toLaunch))
             {
-                TextBlock_Output.Text = ""; 
+                TextBlock_Output.Text = "";
+                _outputText.Clear(); 
 
                 Process process = new Process();
 
                 process.StartInfo.FileName = _toLaunch;
-                process.StartInfo.Arguments = string.Format("\"{0}\" \"{1}\" {2}", InputFile_TextBox.Text, 
+                process.StartInfo.Arguments = string.Format("\"{0}\" \"{1}\" {2}", InputFile_TextBox.Text,
                     OutputFile_TextBox.Text, OutputFile_TextBox_Copy.Text);
 
                 process.StartInfo.CreateNoWindow = true;
@@ -78,8 +91,8 @@ namespace MGEDConsoleLauncher
                 process.StartInfo.RedirectStandardInput = true;
                 process.StartInfo.RedirectStandardOutput = true;
                 process.StartInfo.RedirectStandardError = true;
-
                 process.EnableRaisingEvents = true;
+
                 process.OutputDataReceived += process_OutputDataReceived;
                 process.ErrorDataReceived += process_ErrorDataReceived;
                 process.Exited += process_Exited;
@@ -96,6 +109,8 @@ namespace MGEDConsoleLauncher
         {
             Dispatcher.BeginInvoke((Action)delegate()
             {
+                TextBlock_Output.Text += _outputText.ToString();
+
                 TextBlock_Output.Text += "Process exited with value " + ((Process)sender).ExitCode + "\n";
                 TextBlock_Output.Text += "Process completed in " +
                     ((DateTime.Now - ((Process)sender).StartTime)).TotalSeconds + " seconds.\n";
@@ -106,12 +121,11 @@ namespace MGEDConsoleLauncher
         {
             if (!string.IsNullOrEmpty(e.Data))
             {
-                Dispatcher.BeginInvoke((Action)delegate()
+                Dispatcher.Invoke((Action)delegate()
                 {
                     TextBlock_Output.Text += e.Data + "\n";
                 });
             }
-
             return;
         }
 
@@ -119,20 +133,16 @@ namespace MGEDConsoleLauncher
         {
             if (!string.IsNullOrEmpty(e.Data))
             {
-                Dispatcher.BeginInvoke((Action)delegate()
-                {
-                    TextBlock_Output.Text += e.Data + "\n";
-                });
+                _outputText.Append(e.Data);
             }
-
             return;
         }
 
         private void RadioButton_Checked_1(object sender, RoutedEventArgs e)
         {
-            _toLaunch = ((RadioButton)e.Source).Tag.ToString(); 
+            _toLaunch = ((System.Windows.Controls.RadioButton)e.Source).Tag.ToString();
 
-            return; 
+            return;
         }
     }
 }

@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <iterator>
 #include <vector>
+#include <map>
 
 using namespace System;
 
@@ -19,7 +20,7 @@ namespace Lowell {
 		public ref class FFTW
 		{
 		public:
-			array<double>^ Process(array<double>^ input);   
+			array<double>^ Process(array<double>^ input, int numberOfSignalsToPreserve);   
 		};
 	}
 }

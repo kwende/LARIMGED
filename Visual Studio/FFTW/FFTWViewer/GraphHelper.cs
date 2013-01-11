@@ -10,29 +10,36 @@ namespace FFTWViewer
 {
     public class GraphData
     {
+        public GraphData(Brush brush, double[] data, string name)
+        {
+            Brush = brush;
+            Data = data;
+            Name = name; 
+        }
+
         public Brush Brush { get; set; }
         public double[] Data { get; set; }
         public string Name { get; set; }
     }
 
-    public class GraphHandler
+    public class GraphHelper
     {
         public Chart TheChart { get; private set; }
 
-        public GraphHandler(Chart theChart)
+        public GraphHelper(Chart theChart)
         {
             TheChart = theChart; 
         }
 
-        public void Update(List<GraphData> dataList)
+        public void Update(params GraphData[] graphs)
         {
             double largestY = 0.0;
             double smallestY = double.MaxValue; 
 
             TheChart.Series.Clear();
-            for(int c=0;c<dataList.Count;c++)
+            for (int c = 0; c < graphs.Length; c++)
             {
-                GraphData graphData = dataList[c];
+                GraphData graphData = graphs[c];
 
                 double[] data = graphData.Data;
 

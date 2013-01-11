@@ -65,7 +65,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DataLoader.cs" />
-    <Compile Include="GraphHandler.cs" />
+    <Compile Include="FFTWHelper.cs" />
+    <Compile Include="GraphDataHelper.cs" />
+    <Compile Include="GraphHelper.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

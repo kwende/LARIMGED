@@ -14,13 +14,15 @@
 #include <map>
 
 using namespace System;
+using namespace System::Numerics; 
 
 namespace Lowell {
 	namespace MGED {
 		public ref class FFTW
 		{
 		public:
-			array<double>^ Process(array<double>^ input, int numberOfSignalsToPreserve);   
+			array<Complex>^ Forward(array<double>^ input); 
+			array<double>^ Backward(array<Complex>^ input); 
 		};
 	}
 }

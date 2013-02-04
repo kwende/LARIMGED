@@ -5,6 +5,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FFTWDotNet", "FFTWDotNet\FF
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFTWViewer", "FFTWViewer\FFTWViewer.csproj", "{1F2A3139-4C45-48E4-BF2B-788AC89D7C71}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFTWFrequencyManipulator", "FFTWFrequencyManipulator\FFTWFrequencyManipulator.csproj", "{3706838A-74D5-460A-B543-CBDDE5064FCD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFTWFileHelper", "FFTWFileHelper\FFTWFileHelper.csproj", "{FAB4E678-F276-4E83-9C2F-B0261F4586F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +39,26 @@ Global
 		{1F2A3139-4C45-48E4-BF2B-788AC89D7C71}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{1F2A3139-4C45-48E4-BF2B-788AC89D7C71}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{1F2A3139-4C45-48E4-BF2B-788AC89D7C71}.Release|Win32.ActiveCfg = Release|Any CPU
+		{3706838A-74D5-460A-B543-CBDDE5064FCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3706838A-74D5-460A-B543-CBDDE5064FCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3706838A-74D5-460A-B543-CBDDE5064FCD}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{3706838A-74D5-460A-B543-CBDDE5064FCD}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{3706838A-74D5-460A-B543-CBDDE5064FCD}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{3706838A-74D5-460A-B543-CBDDE5064FCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3706838A-74D5-460A-B543-CBDDE5064FCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3706838A-74D5-460A-B543-CBDDE5064FCD}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{3706838A-74D5-460A-B543-CBDDE5064FCD}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{3706838A-74D5-460A-B543-CBDDE5064FCD}.Release|Win32.ActiveCfg = Release|Any CPU
+		{FAB4E678-F276-4E83-9C2F-B0261F4586F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAB4E678-F276-4E83-9C2F-B0261F4586F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAB4E678-F276-4E83-9C2F-B0261F4586F8}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{FAB4E678-F276-4E83-9C2F-B0261F4586F8}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{FAB4E678-F276-4E83-9C2F-B0261F4586F8}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{FAB4E678-F276-4E83-9C2F-B0261F4586F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAB4E678-F276-4E83-9C2F-B0261F4586F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FAB4E678-F276-4E83-9C2F-B0261F4586F8}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{FAB4E678-F276-4E83-9C2F-B0261F4586F8}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{FAB4E678-F276-4E83-9C2F-B0261F4586F8}.Release|Win32.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

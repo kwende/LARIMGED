@@ -352,7 +352,7 @@ begin
       --
       Sum := 0.0;
       S_Count := 0;
-      Limit := 3.0 * Rms (Sort_Ndx (I));
+      Limit := 2.0 * Rms (Sort_Ndx (I));
       for J in 1 .. T_Count loop
          --
          --  Again, there will always be at least one dataum selected
@@ -364,9 +364,9 @@ begin
          end if;
       end loop;
       if S_Count > 1 then
-         Mean (Sort_Ndx (I)) := Sum / Long_Float (S_Count - 1);
+         Mean (Sort_Ndx (I)) := Sum / Long_Float (S_Count);
       else
-         Mean (Sort_Ndx (I)) := Sqrt (Sum);
+         Mean (Sort_Ndx (I)) := Sum;
       end if;
       --
       --  Re-calculate the RMS magnitude deviation for bin I but
@@ -374,7 +374,7 @@ begin
       --
       Sum := 0.0;
       S_Count := 0;
-      Limit := 3.0 * Rms (Sort_Ndx (I));
+      Limit := 2.0 * Rms (Sort_Ndx (I));
       T_Mean := Mean (Sort_Ndx (I));
       for J in 1 .. T_Count loop
          if abs (Temp (J) - T_Mean) < Limit then
@@ -383,7 +383,7 @@ begin
          end if;
       end loop;
       if S_Count > 1 then
-         Rms (Sort_Ndx (I)) := Sqrt (Sum / Long_Float (S_Count - 1));
+         Rms (Sort_Ndx (I)) := Sqrt (Sum / Long_Float (S_Count));
       else
          Rms (Sort_Ndx (I)) := Sqrt (Sum);
       end if;

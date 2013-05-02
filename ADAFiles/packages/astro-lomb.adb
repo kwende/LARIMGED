@@ -1,8 +1,14 @@
 with 
-  Ada.Text_Io;
+  Ada.Text_Io,
+  Messages;
 use
-  Ada.Text_Io;
-
+  Ada.Text_Io,
+  Messages;
+--
+--  Maitenance Log
+--  2013-03-12 Removed debug statements. Placed error output into 
+--             Error_Msg procedure.
+--
 package body Astro.Lomb is
    
    package Fio is new Float_Io(Astro_Float); use Fio;
@@ -63,7 +69,8 @@ package body Astro.Lomb is
       Nout := Astro_Integer(Astro_Float'Floor(0.5*Ofac*Hifac*Astro_Float(N)));
       Np := Px'Last - Px'First + 1;
       if Nout > Np then
-	 Put_Line("Output arrays are too short to contain all periods.");
+	 Error_msg("Astro.Period","Output arrays are too short to " &
+		     "contain all periods.");
 	 raise User_Error;
       end if;
       --Get mean and variance of the input data.
@@ -71,7 +78,7 @@ package body Astro.Lomb is
       -- Put("Average magnitude = ");Put(Ave,5,5,0);New_Line;
       -- Put("Variance magnitude = ");Put(Var,5,5,0);New_Line;
       if Var = 0.0 then
-	 Put_Line("Zero variance in the period.");
+	 Error_Msg("Astro.Period","Zero variance in the period.");
 	 raise Data_Error;
       end if;
       Wi := new F1_Array(1..N);
@@ -81,9 +88,9 @@ package body Astro.Lomb is
       --Go through data to get the range of abscissas.
       Xmax := X(1);
       Xmin := X(1);
-      Put_Line("Inside Lomb");
-      Put("First time value = ");Put(X(1),7,7,0);New_Line;
-      Put("Last time value = ");Put(X(Astro_Integer(N)),7,7,0);New_Line;      
+      --Put_Line("Inside Lomb");
+      --Put("First time value = ");Put(X(1),7,7,0);New_Line;
+      --Put("Last time value = ");Put(X(Astro_Integer(N)),7,7,0);New_Line;      
       for J in 1 .. Astro_Integer(N) loop
 	 if X(J) > Xmax then
 	    Xmax := X(J);
@@ -94,8 +101,8 @@ package body Astro.Lomb is
       end loop;
       Xdif := Xmax - Xmin;
       Xave := 0.5 * (Xmax + Xmin);
-      Put("Abcissa range = ");Put(Xdif,4,2,0);New_Line;
-      Put("Abcissa mean = ");Put(Xave,4,2,0);New_Line;
+      --Put("Abcissa range = ");Put(Xdif,4,2,0);New_Line;
+      --Put("Abcissa mean = ");Put(Xave,4,2,0);New_Line;
       Pymax := 0.0;
       --Starting frequency.
       Pnow := 1.0 / (Xdif * Ofac);

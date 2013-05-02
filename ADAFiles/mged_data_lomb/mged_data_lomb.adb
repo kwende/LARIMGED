@@ -45,6 +45,10 @@
 --
 --  </description>
 --
+--  Error Correction Log
+--  2013-03-12 Fixed some error message problems.
+--  2013-03-12 Removded some debug statements.
+--
 with Astro,
   Astro.Lomb,
   Ada.Text_IO,
@@ -116,7 +120,8 @@ begin
       when others =>
          Error_Msg
            ("mged_data_lomb",
-            "The procedure could not open the specified input file. " &
+            "The procedure could not open the specified input file, " &
+	      Trim(Argument(1),Both) & ".  " &
               "Often, this error occurs when the file name is " &
               "misspelled or the file does not exist.");
          raise User_Error;
@@ -136,8 +141,8 @@ begin
    if Line_Count < 3 then
       Error_Msg
 	("mged_data_lomb",
-	 "The the specified input file. " &
-	   "contained insufficient data to perform the analysis. " &
+	 "The the specified input file, " & Trim(Argument(1),Both) &
+	   ", contained insufficient data to perform the analysis. " &
 	   "Often this problem occurs when the file is empty.");
       Close(Src);
       raise Data_Error;
@@ -159,8 +164,11 @@ begin
       Get_Line(Src,Buffer,Tail);
       Line_Count_2 := Line_Count_2 + 1;
       if Trim(Buffer(1..Tail),Both) = "" then
-	 Put_Line("The procedure found an empty line in the data file.");
-	 Put("The offending line number is ");Put(Line_Count_2);New_Line;
+	 Put(Number_Str,Line_Count_2);
+	 Error_Msg("mged_data_lomb",
+		   "The procedure found an empty line in the data file." &
+		     "The offending line number is " &
+		     Trim(Number_Str,Both) & ".");
 	 raise Data_Error;
       end if;
       Ptr := Ptr + 1;  
@@ -202,13 +210,13 @@ begin
    --  increasing order.
    --
    T1 := Time(1);
-   for I in 1 .. Line_Count loop
-      Put(Time(I),7,7,0);Put(" ");
-      Time(I) := Time(I) - T1;
-      Put(Time(I),7,7,0);New_Line;
-   end loop; 
+   --for I in 1 .. Line_Count loop
+   --   Put(Time(I),7,7,0);Put(" ");
+   --   Time(I) := Time(I) - T1;
+   --   Put(Time(I),7,7,0);New_Line;
+   --end loop; 
    Ofac := 4.0; -- Oversampling factor
-   Hyfac := 2.0; -- Multiple of the Nyquist freq, defines frequency search limit
+   Hyfac := 8.0; -- Multiple of the Nyquist freq, defines frequency search limit
    Array_length := Integer(Long_Float'Floor
 			     (0.5*Ofac*Hyfac*Long_Float(Line_Count)));
    Px := new F1_Array(1..Array_Length);
@@ -222,11 +230,11 @@ begin
    --
    Put("Data Count = ");Put(Line_Count);New_Line;
    --Put("mag'last = ");Put(Mag'Last);New_Line;
-   Put("Ofac = ");Put(Ofac,4,4,0);New_Line;
-   Put("Hyfac = ");Put(Hyfac,4,4,0);New_Line;
-   Put("Nout = ");Put(Nout);New_Line;
-   Put("Jmax = ");Put(Jmax);New_Line;
-   Put("Prob = ");Put(Prob,4,4,0);New_Line;
+   Put("Oversampling factor = ");Put(Ofac,4,4,0);New_Line;
+   Put("Nyquist factor multiplier = ");Put(Hyfac,4,4,0);New_Line;
+   Put("Number of output frequencies  = ");Put(Nout);New_Line;
+   Put("Index of largest ""power"" = ");Put(Jmax);New_Line;
+   Put("Probability of non-noise in most powerful (smaller is better) = ");Put(Prob,4,4,0);New_Line;
    --
    --  Open the output (destination) file.
    --
